@@ -1,6 +1,6 @@
 # Planificateur des Lévites — CIE-France
 
-Outil de planification des disponibilités pour les répétitions du samedi et les cultes du dimanche. Un seul lien permanent, synchronisation en temps réel — pas d'inscription, pas de copier-coller.
+Outil de planification des disponibilités pour les répétitions du samedi et les cultes du dimanche. Un seul lien permanent, synchronisation en temps réel.
 
 🔗 **Lien** : https://kennethoued.github.io/cie-france/levites-planner/
 
@@ -25,7 +25,7 @@ Chaque clic fait tourner la réponse. Les mises à jour sont sauvegardées autom
 
 ---
 
-## Utilisation (admins — Sylvain & Lionel)
+## Utilisation (admins — Sylvain & ...)
 
 Les admins ont accès à la section **Équipe** après authentification.
 
