@@ -429,7 +429,7 @@ function nextMonth(){if(S.month===11){S.month=0;S.year++;}else S.month++;pushSta
 function addMember(){
   const el=document.getElementById('addInp');if(!el)return;
   const name=el.value.trim();
-  if(name&&!S.members.includes(name)){S.members.push(name);el.value='';pushState();render();}
+  if(name&&!S.members.includes(name)){S.members.push(name);S.members.sort((a,b)=>a.localeCompare(b,'fr'));el.value='';pushState();render();}
 }
 
 function removeMember(name){
@@ -777,7 +777,7 @@ if(_db) _db.on('value',
     if(data){
       data.admins = data.admins || {};
       data.avail  = data.avail  || {};
-      data.members= data.members|| S.members;
+      data.members= (data.members|| S.members).sort((a,b)=>a.localeCompare(b,'fr'));
       S = data;
     } else {
       _db.set(S).catch(()=>{});
