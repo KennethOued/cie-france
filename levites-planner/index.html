@@ -310,7 +310,7 @@ const firebaseConfig = {
   appId: "1:837118221730:web:239627aa024e86d08fe6fb"
 };
 firebase.initializeApp(firebaseConfig);
-const _db = firebase.database().ref('levites/state');
+var _db = firebase.database().ref('levites/state');
 </script>
 
 <div id="app"></div>
@@ -621,45 +621,11 @@ function render(){
     </div>`;
   }
 
-  // ── Copy button (all members) ──
-  const memberCopyHtml=`<div class="member-copy">
-    <button class="btn-member-copy" onclick="copyUrl()">Copier le lien mis à jour</button>
-    <div class="member-copy-hint">Colle ce lien dans WhatsApp après avoir renseigné tes disponibilités — il contient les réponses de tout le monde.</div>
-    ${L.copiedFlash?'<div class="copy-flash">✓ Lien copié !</div>':''}
-  </div>`;
+  const memberCopyHtml='';
 
   // ── Admin sections ──
   let adminSections='';
   if(L.isAdmin){
-    // Share section
-    adminSections+=`<div class="sec">
-      <div class="share-card">
-        <div class="share-hd">Partager dans WhatsApp</div>
-        <div class="share-bd">
-          <div class="share-row">
-            <button class="sbtn sbtn-copy" onclick="copyUrl2()">
-              <span class="sbtn-icon">📋</span>
-              <span class="sbtn-txt">
-                <strong>Copier le lien</strong>
-                <span>URL complète avec toutes les réponses — à coller manuellement dans le groupe</span>
-              </span>
-            </button>
-          </div>
-          <div class="share-row">
-            <button class="sbtn sbtn-wa" onclick="shareWA()">
-              <span class="sbtn-icon">💬</span>
-              <span class="sbtn-txt">
-                <strong>Envoyer le récap WhatsApp</strong>
-                <span>Ouvre WhatsApp avec un message pré-rédigé : liste des disponibles par date + lien de mise à jour</span>
-              </span>
-            </button>
-          </div>
-          ${L.copiedFlash2?'<div class="copy-flash2">✓ Lien copié !</div>':''}
-          <div class="data-note">Les données des mois précédents sont conservées dans le lien. Utilise ‹ › pour les consulter.</div>
-        </div>
-      </div>
-    </div>`;
-
     // Team section
     const memberItems=S.members.map(m=>`
       <div class="mem-item">
