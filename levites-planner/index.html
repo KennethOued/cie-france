@@ -388,6 +388,7 @@ function getUrl(){return location.origin+location.pathname+'#'+buildHash();}
 
 function getAv(m,ds){return(S.avail[m]||{})[ds]||'u';}
 function setAv(m,ds,v){
+  if(!S.avail)S.avail={};
   if(!S.avail[m])S.avail[m]={};
   if(v==='u')delete S.avail[m][ds];
   else S.avail[m][ds]=v;
@@ -774,6 +775,9 @@ _db.on('value',
   snapshot => {
     const data = snapshot.val();
     if(data){
+      data.admins = data.admins || {};
+      data.avail  = data.avail  || {};
+      data.members= data.members|| S.members;
       S = data;
     } else {
       _db.set(S).catch(()=>{});
