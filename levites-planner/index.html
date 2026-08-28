@@ -290,6 +290,23 @@
   @media(prefers-reduced-motion:reduce){.av,.sbtn,.btn-member-copy{transition:none;}}
 </style>
 
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyC1F4m4FJJTDrHDpSP1g2swEYlvzRQmj4c",
+  authDomain: "cie-france-levites.firebaseapp.com",
+  databaseURL: "https://cie-france-levites-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "cie-france-levites",
+  storageBucket: "cie-france-levites.firebasestorage.app",
+  messagingSenderId: "837118221730",
+  appId: "1:837118221730:web:239627aa024e86d08fe6fb"
+};
+firebase.initializeApp(firebaseConfig);
+const _db = firebase.database().ref('levites/state');
+</script>
+
 <div id="app"></div>
 
 <script>
@@ -360,6 +377,7 @@ function buildHash(){
   return encodeURIComponent(JSON.stringify({year,month,members,admins,avail}));
 }
 function pushHash(){history.replaceState(null,'','#'+buildHash());}
+function pushState(){pushHash();_db.set(S).catch(()=>{});}
 function getUrl(){return location.origin+location.pathname+'#'+buildHash();}
 
 function getAv(m,ds){return(S.avail[m]||{})[ds]||'u';}
@@ -368,7 +386,7 @@ function setAv(m,ds,v){
   if(v==='u')delete S.avail[m][ds];
   else S.avail[m][ds]=v;
   if(S.avail[m]&&!Object.keys(S.avail[m]).length)delete S.avail[m];
-  pushHash();
+  pushState();
 }
 
 function isAdminName(name){return name&&name in S.admins;}
@@ -398,13 +416,13 @@ function submitPin(){
   }
 }
 
-function prevMonth(){if(S.month===0){S.month=11;S.year--;}else S.month--;pushHash();render();}
-function nextMonth(){if(S.month===11){S.month=0;S.year++;}else S.month++;pushHash();render();}
+function prevMonth(){if(S.month===0){S.month=11;S.year--;}else S.month--;pushState();render();}
+function nextMonth(){if(S.month===11){S.month=0;S.year++;}else S.month++;pushState();render();}
 
 function addMember(){
   const el=document.getElementById('addInp');if(!el)return;
   const name=el.value.trim();
-  if(name&&!S.members.includes(name)){S.members.push(name);el.value='';pushHash();render();}
+  if(name&&!S.members.includes(name)){S.members.push(name);el.value='';pushState();render();}
 }
 
 function removeMember(name){
@@ -412,7 +430,7 @@ function removeMember(name){
   S.members=S.members.filter(m=>m!==name);
   delete S.avail[name];delete S.admins[name];
   if(L.selName===name){L.selName='';L.isAdmin=false;}
-  pushHash();render();
+  pushState();render();
 }
 
 function addAdmin(){
@@ -420,7 +438,7 @@ function addAdmin(){
   const p=L.addAdminPin.trim();
   if(!n||!p||!S.members.includes(n)){alert('Choisis un membre et saisis un code.');return;}
   S.admins[n]=hp(p);L.addAdminName='';L.addAdminPin='';
-  pushHash();render();
+  pushState();render();
 }
 
 function removeAdmin(name){
@@ -430,7 +448,7 @@ function removeAdmin(name){
   if(!confirm(`Retirer l'accès admin de ${name} ?`))return;
   delete S.admins[name];
   if(name===L.selName){L.isAdmin=false;}
-  pushHash();render();
+  pushState();render();
 }
 
 function startChangePin(name){L.changePinFor=name;L.changePinVal='';render();
@@ -441,7 +459,7 @@ function savePin(name){
   if(!p){alert('Code vide non accepté.');return;}
   S.admins[name]=hp(p);L.changePinFor=null;L.changePinVal='';
   if(name===L.selName)L.pinInput=''; // invalidate cached pin
-  pushHash();render();
+  pushState();render();
 }
 
 function copyUrl(){
@@ -775,5 +793,19 @@ function render(){
 
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 
-loadHash();render();
+// Firebase real-time sync
+_db.on('value', snapshot => {
+  const data = snapshot.val();
+  if(data){
+    S = data;
+  } else {
+    // First launch: seed from URL hash if present, then write to Firebase
+    const h = location.hash.slice(1);
+    if(h){ try{ const p=JSON.parse(decodeURIComponent(h)); S=Object.assign(S,p); }catch(e){} }
+    _db.set(S);
+  }
+  if(!document.activeElement || !document.activeElement.matches('input,select')){
+    render();
+  }
+});
 </script>
