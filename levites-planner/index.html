@@ -799,21 +799,25 @@ function render(){
 
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 
-// Firebase real-time sync
-_db.on('value', snapshot => {
-  const data = snapshot.val();
-  if(data){
-    S = data;
-  } else {
-    // First launch: seed from URL hash if present, then write to Firebase
-    const h = location.hash.slice(1);
-    if(h){ try{ const p=JSON.parse(decodeURIComponent(h)); S=Object.assign(S,p); }catch(e){} }
-    _db.set(S);
-  }
-  if(!document.activeElement || !document.activeElement.matches('input,select')){
-    render();
-  }
-});
+// Render immediately from URL hash so page never starts blank
+loadHash();
+render();
+
+// Firebase real-time sync (updates render once connected)
+_db.on('value',
+  snapshot => {
+    const data = snapshot.val();
+    if(data){
+      S = data;
+    } else {
+      _db.set(S);
+    }
+    if(!document.activeElement || !document.activeElement.matches('input,select')){
+      render();
+    }
+  },
+  err => { console.warn('Firebase:', err.code); }
+);
 </script>
 </body>
 </html>
